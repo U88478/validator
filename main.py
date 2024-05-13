@@ -59,8 +59,19 @@ def validate_html(file_path):
                 if attr not in tag_details(tag)["attributes"]:
                     errors.append(f"Line {line_number}: Invalid attribute '{attr}' for tag <{tag}>.")
 
-    for line_number, line_content in enumerate(html_lines, start=1):
+    for line_number, line_content in enumerate(html_lines):
         line_content = line_content.strip()
+
+        # Check the arrows < >
+        an = []
+        for i in line_content:
+            if i == "<":
+                an.append((line_number, i))
+            elif i == ">":
+                an.pop() if an else errors.append(f"Line {line_number}: Unexpected symbol {i}")
+        if an:
+            for line_number, i in an:
+                errors.append(f"Line {line_number}: Missing closing \">\".")
 
         # Check for DOCTYPE declaration
         if not doctype_found and re.match(r'<!DOCTYPE html>', line_content, re.IGNORECASE):
