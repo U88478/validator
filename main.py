@@ -1,6 +1,8 @@
 import json
 import re
 
+from tututu import empiler, depiler
+
 with open("html_tags_info.json", "r") as html_info:
     tags_info = json.load(html_info)
 
@@ -29,34 +31,35 @@ def validate_html(file_path):
             tag_info = tag_details(tag_name)
 
             if not tag_info:
-                errors.append(f"Line {line_number}: Unknown or unsupported tag <{tag_name}>.")
+                errors = empiler(errors, f"Line {line_number}: Unknown or unsupported tag <{tag_name}>.")
                 continue
 
             if is_closing:
                 if tags_stack and tags_stack[-1][1] == tag_name:
-                    tags_stack.pop()
+                    tags_stack = depiler(tags_stack)
                 else:
                     # Check if it matches any tag in the stack(unexpected closing tag) to provide specific feedback
                     if any(t[1] == tag_name for t in tags_stack):
-                        errors.append(
-                            f"Line {line_number}: Unexpected closing tag <{tag_name}>. "
-                            f"Other tags were expected to close first.")
+                        errors = empiler(errors,
+                                         f"Line {line_number}: Unexpected closing tag <{tag_name}>. "
+                                         f"Other tags were expected to close first.")
                         # Close up to the unexpected tag, noting an error for each
                         while tags_stack and tags_stack[-1][1] != tag_name:
-                            line_num, unclosed_tag = tags_stack.pop()
-                            errors.append(f"Line {line_num}: Missing closing </{unclosed_tag}>.")
-                        tags_stack.pop()  # Remove the unexpected tag
+                            line_num, unclosed_tag = tags_stack.pop()  # line_num, unclosed_tag = depiler(tags_stack)
+                            # ValueError: too many values to unpack (expected 2)
+                            errors = empiler(errors, f"Line {line_num}: Missing closing </{unclosed_tag}>.")
+                        tags_stack = depiler(tags_stack)  # Remove the unexpected tag
                     else:
                         expected_tag = tags_stack[-1][1] if tags_stack else 'None'
-                        errors.append(
-                            f"Line {line_number}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
+                        errors = empiler(errors,
+                                         f"Line {line_number}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
             else:
                 if not tag_info["Void"]:
-                    tags_stack.append((line_number, tag_name))
+                    tags_stack = empiler(tags_stack, (line_number, tag_name))
 
     if tags_stack:
         for line_number, tag_name in tags_stack:
-            errors.append(f"Line {line_number}: Missing closing </{tag_name}>.")
+            errors = empiler(errors, f"Line {line_number}: Missing closing </{tag_name}>.")
 
     if errors:
         for error in errors:
@@ -66,4 +69,4 @@ def validate_html(file_path):
 
 
 # Example call to validate_html function
-validate_html("test_index.html")
+validate_html("Exemple 1 HTML.txt")
