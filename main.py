@@ -1,7 +1,7 @@
 import json
 import re
 
-from tututu import empiler
+from tututu import empiler, depiler
 
 # Load tags and attributes information
 with open("html_unified_info.json", "r") as info_file:
@@ -69,7 +69,7 @@ def validate_html(html: str) -> list | str:
             if i == "<":
                 empiler(an, (line_number, i))
             elif i == ">":
-                an.pop() if an else empiler(errors, f"Line {line_number + 1}: Unexpected symbol {i}")
+                depiler(an) if an else empiler(errors, f"Line {line_number + 1}: Unexpected symbol {i}")
         if an:
             for line_number, i in an:
                 empiler(errors, (f"Line {line_number + 1}: Missing closing \">\"."))
@@ -92,7 +92,7 @@ def validate_html(html: str) -> list | str:
 
             if is_closing == '/':
                 if tags_stack and tags_stack[-1][1] == tag_name_lower:
-                    tags_stack.pop()
+                    depiler(tags_stack)
                 else:
                     if any(t[1] == tag_name_lower for t in tags_stack):
                         empiler(errors, (
@@ -101,7 +101,7 @@ def validate_html(html: str) -> list | str:
                         while tags_stack and tags_stack[-1][1] != tag_name_lower:
                             line_num, unclosed_tag = tags_stack.pop()
                             empiler(errors, f"Line {line_num + 1}: Missing closing </{unclosed_tag}>.")
-                        tags_stack.pop()
+                        depiler(tags_stack)
                     else:
                         expected_tag = tags_stack[-1][1] if tags_stack else 'None'
                         empiler(errors,
