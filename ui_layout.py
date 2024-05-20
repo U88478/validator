@@ -25,6 +25,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.cursorPositionChanged.connect(self.highlightCurrentLine)
         self.updateLineNumberAreaWidth(0)
         self.highlightCurrentLine()
+        self.setWordWrapMode(QtGui.QTextOption.WrapAtWordBoundaryOrAnywhere)  # Ensures text wrapping
 
     def lineNumberAreaWidth(self):
         digits = 1
@@ -53,7 +54,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
     def lineNumberAreaPaintEvent(self, event):
         painter = QtGui.QPainter(self.lineNumberArea)
-        painter.fillRect(event.rect(), QtCore.Qt.lightGray)
+        painter.fillRect(event.rect(), QtGui.QColor("#ECECEC"))  # Set a prettier background color for line numbers
 
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
@@ -85,6 +86,27 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
         self.setExtraSelections(extra_selections)
 
+    def setCustomCursor(self):
+        cursor = self.textCursor()
+        fmt = cursor.charFormat()
+        fmt.setBackground(QtGui.QColor(QtCore.Qt.transparent))
+        cursor.setCharFormat(fmt)
+        self.setTextCursor(cursor)
+        self.cursorPositionChanged.connect(self.updateCursorMarker)
+
+    def updateCursorMarker(self):
+        cursor = self.textCursor()
+        fmt = cursor.charFormat()
+        fmt.setBackground(QtGui.QColor(QtCore.Qt.transparent))
+        cursor.setCharFormat(fmt)
+        self.setTextCursor(cursor)
+
+        # Draw the custom cursor marker
+        cursor_position = self.cursorRect(cursor).center()
+        painter = QtGui.QPainter(self.viewport())
+        painter.setPen(QtGui.QPen(QtGui.QColor("red"), 2))
+        painter.drawLine(cursor_position.x(), cursor_position.y() - 10, cursor_position.x(), cursor_position.y() + 10)
+
 
 # Main window layout class
 class UiMainWindow(object):
@@ -115,7 +137,7 @@ class UiMainWindow(object):
 
         # Create upload button
         self.uploadButton = QtWidgets.QToolButton(self.centralwidget)
-        self.uploadButton.setGeometry(QtCore.QRect(20, 480, 81, 19))
+        self.uploadButton.setGeometry(QtCore.QRect(20, 480, 81, 20))
         self.uploadButton.setObjectName("uploadButton")
         self.uploadButton.setText("Upload a file")
         self.uploadButton.setStyleSheet("""
@@ -133,7 +155,7 @@ class UiMainWindow(object):
 
         # Create validate button
         self.validateButton = QtWidgets.QToolButton(self.centralwidget)
-        self.validateButton.setGeometry(QtCore.QRect(440, 480, 81, 19))
+        self.validateButton.setGeometry(QtCore.QRect(440, 480, 81, 20))
         self.validateButton.setObjectName("validateButton")
         self.validateButton.setText("Validate")
         self.validateButton.setStyleSheet("""
@@ -151,7 +173,7 @@ class UiMainWindow(object):
 
         # Create download HTML button
         self.downloadHTMLButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadHTMLButton.setGeometry(QtCore.QRect(740, 480, 100, 19))
+        self.downloadHTMLButton.setGeometry(QtCore.QRect(740, 480, 100, 20))
         self.downloadHTMLButton.setObjectName("downloadHTMLButton")
         self.downloadHTMLButton.setText("Download HTML")
         self.downloadHTMLButton.setEnabled(False)
@@ -177,7 +199,7 @@ class UiMainWindow(object):
 
         # Create download button
         self.downloadButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadButton.setGeometry(QtCore.QRect(850, 480, 100, 19))
+        self.downloadButton.setGeometry(QtCore.QRect(850, 480, 100, 20))
         self.downloadButton.setObjectName("downloadButton")
         self.downloadButton.setText("Download errors")
         self.downloadButton.setStyleSheet("""
@@ -198,9 +220,38 @@ class UiMainWindow(object):
         self.htmlScrollArea.setGeometry(QtCore.QRect(20, 70, 441, 391))
         self.htmlScrollArea.setWidgetResizable(True)
         self.htmlScrollArea.setObjectName("htmlScrollArea")
+        self.htmlScrollArea.setStyleSheet("""
+            QScrollBar:vertical {
+                border: 1px solid #CCCCCC;
+                background: #F5F5F5;
+                width: 10px;
+                margin: 0px 0px 0px 0px;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:vertical {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop: 0 #D3D3D3, stop: 0.5 #C0C0C0, stop: 1 #D3D3D3);
+                min-height: 20px;
+                border-radius: 5px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop: 0 #C0C0C0, stop: 0.5 #A9A9A9, stop: 1 #C0C0C0);
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+                background: none;
+            }
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                background: none;
+            }
+        """)
 
         self.htmlContent = CodeEditor(self.centralwidget)
-        self.htmlContent.setStyleSheet("background-color: #fff; color: #000; border: 1px solid #aaa;")
+        self.htmlContent.setStyleSheet("font-size: 8pt; background-color: #fff; color: #000; border: 1px solid #aaa;")
         self.htmlScrollArea.setWidget(self.htmlContent)
 
         # Create scroll area for validation errors
@@ -212,7 +263,7 @@ class UiMainWindow(object):
         self.errorContent = QtWidgets.QTextBrowser(self.centralwidget)
         self.errorScrollArea.setWidget(self.errorContent)
         self.errorContent.setStyleSheet(
-            "background-color: #fff; border: 1px solid #aaa; border-radius: 4px; color: #000;")
+            "font-size: 10pt; background-color: #fff; border: 1px solid #aaa; border-radius: 4px; color: #000;")
 
         MainWindow.setCentralWidget(self.centralwidget)
 

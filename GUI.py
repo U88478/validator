@@ -12,6 +12,8 @@ class HTMLValidatorApp(QtWidgets.QMainWindow):
         self.ui = UiMainWindow()
         self.ui.setupUi(self)
 
+        self.ui.htmlContent.setCustomCursor()  # Set the custom cursor
+
         self.original_html = ""
         self.content_changed_after_upload = False
 
