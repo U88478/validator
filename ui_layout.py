@@ -139,7 +139,7 @@ class UiMainWindow(object):
 
         # Create download HTML button
         self.downloadHTMLButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadHTMLButton.setGeometry(QtCore.QRect(760, 480, 91, 19))
+        self.downloadHTMLButton.setGeometry(QtCore.QRect(740, 480, 100, 19))
         self.downloadHTMLButton.setObjectName("downloadHTMLButton")
         self.downloadHTMLButton.setText("Download HTML")
         self.downloadHTMLButton.setEnabled(False)
@@ -165,7 +165,7 @@ class UiMainWindow(object):
 
         # Create download button
         self.downloadButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadButton.setGeometry(QtCore.QRect(860, 480, 91, 19))
+        self.downloadButton.setGeometry(QtCore.QRect(850, 480, 100, 19))
         self.downloadButton.setObjectName("downloadButton")
         self.downloadButton.setText("Download errors")
         self.downloadButton.setStyleSheet("""
