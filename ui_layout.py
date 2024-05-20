@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 
 
+# Custom widget to display line numbers
 class LineNumberArea(QtWidgets.QWidget):
     def __init__(self, editor):
         super().__init__(editor)
@@ -14,6 +15,7 @@ class LineNumberArea(QtWidgets.QWidget):
         self.codeEditor.lineNumberAreaPaintEvent(event)
 
 
+# Custom editor widget to show code with line numbers
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, *args):
         super().__init__(*args)
@@ -84,6 +86,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.setExtraSelections(extra_selections)
 
 
+# Main window layout class
 class UiMainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -96,31 +99,87 @@ class UiMainWindow(object):
         self.titleLabel = QtWidgets.QLabel("HTML Validator", self.centralwidget)
         self.titleLabel.setGeometry(QtCore.QRect(390, 10, 191, 51))
         self.titleLabel.setAlignment(Qt.AlignCenter)
-        self.titleLabel.setStyleSheet("font-size: 18pt; font-weight: bold; background: none;")
+        self.titleLabel.setStyleSheet("font-size: 18pt; font-weight: bold; background: none; color: black;")
 
         # Create upload button
         self.uploadButton = QtWidgets.QToolButton(self.centralwidget)
         self.uploadButton.setGeometry(QtCore.QRect(20, 480, 81, 19))
         self.uploadButton.setObjectName("uploadButton")
         self.uploadButton.setText("Upload a file")
+        self.uploadButton.setStyleSheet("""
+            QToolButton {
+                background-color: #ddd;
+                color: #000;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:hover {
+                background-color: #ccc;
+            }
+        """)
 
         # Create validate button
         self.validateButton = QtWidgets.QToolButton(self.centralwidget)
         self.validateButton.setGeometry(QtCore.QRect(440, 480, 81, 19))
         self.validateButton.setObjectName("validateButton")
         self.validateButton.setText("Validate")
+        self.validateButton.setStyleSheet("""
+            QToolButton {
+                background-color: #ddd;
+                color: #000;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:hover {
+                background-color: #ccc;
+            }
+        """)
 
-        # Create download html button
+        # Create download HTML button
         self.downloadHTMLButton = QtWidgets.QToolButton(self.centralwidget)
         self.downloadHTMLButton.setGeometry(QtCore.QRect(760, 480, 91, 19))
         self.downloadHTMLButton.setObjectName("downloadHTMLButton")
         self.downloadHTMLButton.setText("Download HTML")
+        self.downloadHTMLButton.setEnabled(False)
+        self.downloadHTMLButton.setStyleSheet("""
+            QToolButton:disabled {
+                background-color: #f5f5f5;
+                color: #aaa;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:enabled {
+                background-color: #ddd;
+                color: #000;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:enabled:hover {
+                background-color: #ccc;
+            }
+        """)
 
         # Create download button
         self.downloadButton = QtWidgets.QToolButton(self.centralwidget)
         self.downloadButton.setGeometry(QtCore.QRect(860, 480, 91, 19))
         self.downloadButton.setObjectName("downloadButton")
         self.downloadButton.setText("Download errors")
+        self.downloadButton.setStyleSheet("""
+            QToolButton {
+                background-color: #ddd;
+                color: #000;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                padding: 4px 8px;
+            }
+            QToolButton:hover {
+                background-color: #ccc;
+            }
+        """)
 
         # Create scroll area for HTML content
         self.htmlScrollArea = QtWidgets.QScrollArea(self.centralwidget)
@@ -129,6 +188,7 @@ class UiMainWindow(object):
         self.htmlScrollArea.setObjectName("htmlScrollArea")
 
         self.htmlContent = CodeEditor(self.centralwidget)
+        self.htmlContent.setStyleSheet("background-color: #fff; color: #000; border: 1px solid #aaa;")
         self.htmlScrollArea.setWidget(self.htmlContent)
 
         # Create scroll area for validation errors
@@ -139,6 +199,8 @@ class UiMainWindow(object):
 
         self.errorContent = QtWidgets.QTextBrowser(self.centralwidget)
         self.errorScrollArea.setWidget(self.errorContent)
+        self.errorContent.setStyleSheet(
+            "background-color: #fff; border: 1px solid #aaa; border-radius: 4px; color: #000;")
 
         MainWindow.setCentralWidget(self.centralwidget)
 
