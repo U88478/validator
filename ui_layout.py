@@ -101,6 +101,18 @@ class UiMainWindow(object):
         self.titleLabel.setAlignment(Qt.AlignCenter)
         self.titleLabel.setStyleSheet("font-size: 18pt; font-weight: bold; background: none; color: black;")
 
+        # Create title label and center it
+        self.inputLabel = QtWidgets.QLabel("HTML Input", self.centralwidget)
+        self.inputLabel.setGeometry(QtCore.QRect(20, 50, 71, 16))
+        self.inputLabel.setAlignment(Qt.AlignCenter)
+        self.inputLabel.setStyleSheet("font-size: 8pt; font-weight: bold; background: none; color: black;")
+
+        # Create title label and center it
+        self.outputLabel = QtWidgets.QLabel("Errors Output", self.centralwidget)
+        self.outputLabel.setGeometry(QtCore.QRect(870, 50, 80, 16))
+        self.outputLabel.setAlignment(Qt.AlignCenter)
+        self.outputLabel.setStyleSheet("font-size: 8pt; font-weight: bold; background: none; color: black;")
+
         # Create upload button
         self.uploadButton = QtWidgets.QToolButton(self.centralwidget)
         self.uploadButton.setGeometry(QtCore.QRect(20, 480, 81, 19))

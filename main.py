@@ -1,6 +1,8 @@
 import json
 import re
 
+from tututu import empiler
+
 # Load tags and attributes information
 with open("html_unified_info.json", "r") as info_file:
     unified_info = json.load(info_file)
@@ -36,27 +38,27 @@ def validate_html(html: str) -> list | str:
     def validate_essential_tags():
         # Check for missing essential tags in the correct order
         if not doctype_found:
-            essential_errors.append("Missing DOCTYPE declaration.")
+            empiler(essential_errors, "Missing DOCTYPE declaration.")
         if not essential_tags_found["html"]:
-            essential_errors.append("Missing <html> tag.")
+            empiler(essential_errors, "Missing <html> tag.")
         elif not essential_tags_closed["html"]:
-            essential_errors.append("Missing closing </html> tag.")
+            empiler(essential_errors, "Missing closing </html> tag.")
         if essential_tags_found["html"]:
             if not essential_tags_found["head"]:
-                essential_errors.append("Missing <head> tag.")
+                empiler(essential_errors, "Missing <head> tag.")
             elif not essential_tags_closed["head"]:
-                essential_errors.append("Missing closing </head> tag.")
+                empiler(essential_errors, "Missing closing </head> tag.")
             if not essential_tags_found["body"]:
-                essential_errors.append("Missing <body> tag.")
+                empiler(essential_errors, "Missing <body> tag.")
             elif not essential_tags_closed["body"]:
-                essential_errors.append("Missing closing </body> tag.")
+                empiler(essential_errors, "Missing closing </body> tag.")
 
     def validate_attributes(tag, attributes_str, line_number):
         if attributes_str:
             attributes = re.findall(r'(\w+)(?:\s*=\s*"[^"]*")?', attributes_str)
             for attr in attributes:
                 if attr not in tag_details(tag)["attributes"]:
-                    errors.append(f"Line {line_number + 1}: Invalid attribute '{attr}' for tag <{tag}>.")
+                    empiler(errors, f"Line {line_number + 1}: Invalid attribute '{attr}' for tag <{tag}>.")
 
     for line_number, line_content in enumerate(html_lines):
         line_content = line_content.strip()
@@ -65,12 +67,12 @@ def validate_html(html: str) -> list | str:
         an = []
         for i in line_content:
             if i == "<":
-                an.append((line_number, i))
+                empiler(an, (line_number, i))
             elif i == ">":
-                an.pop() if an else errors.append(f"Line {line_number + 1}: Unexpected symbol {i}")
+                an.pop() if an else empiler(errors, f"Line {line_number + 1}: Unexpected symbol {i}")
         if an:
             for line_number, i in an:
-                errors.append(f"Line {line_number + 1}: Missing closing \">\".")
+                empiler(errors, (f"Line {line_number + 1}: Missing closing \">\"."))
 
         # Check for DOCTYPE declaration
         if not doctype_found and re.match(r'<!DOCTYPE html>', line_content, re.IGNORECASE):
@@ -82,7 +84,7 @@ def validate_html(html: str) -> list | str:
             tag_info = tag_details(tag_name_lower)
 
             if not tag_info:
-                errors.append(f"Line {line_number + 1}: Unknown or unsupported tag <{tag_name}>.")
+                empiler(errors, f"Line {line_number + 1}: Unknown or unsupported tag <{tag_name}>.")
                 continue
 
             handle_essential_tag(tag_name_lower, is_closing == '/', line_number)
@@ -93,20 +95,20 @@ def validate_html(html: str) -> list | str:
                     tags_stack.pop()
                 else:
                     if any(t[1] == tag_name_lower for t in tags_stack):
-                        errors.append(
+                        empiler(errors, (
                             f"Line {line_number + 1}: Unexpected closing tag </{tag_name}>. "
-                            f"Other tags were expected to close first.")
+                            f"Other tags were expected to close first."))
                         while tags_stack and tags_stack[-1][1] != tag_name_lower:
                             line_num, unclosed_tag = tags_stack.pop()
-                            errors.append(f"Line {line_num + 1}: Missing closing </{unclosed_tag}>.")
+                            empiler(errors, f"Line {line_num + 1}: Missing closing </{unclosed_tag}>.")
                         tags_stack.pop()
                     else:
                         expected_tag = tags_stack[-1][1] if tags_stack else 'None'
-                        errors.append(
-                            f"Line {line_number + 1}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
+                        empiler(errors,
+                                f"Line {line_number + 1}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
             else:
                 if not tag_info["void"]:
-                    tags_stack.append((line_number, tag_name_lower))
+                    empiler(tags_stack, (line_number, tag_name_lower))
 
     # Final checks for essential tags
     validate_essential_tags()
@@ -117,7 +119,7 @@ def validate_html(html: str) -> list | str:
 
     if tags_stack:
         for line_number, tag_name in tags_stack:
-            errors.append(f"Line {line_number + 1}: Missing closing </{tag_name}>.")
+            empiler(errors, f"Line {line_number + 1}: Missing closing </{tag_name}>.")
 
     return errors if errors else "HTML validation passed."
 
