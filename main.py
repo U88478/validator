@@ -69,16 +69,25 @@ def validate_html(html: str) -> list | str:
             if i == "<":
                 empiler(an, (line_number, i))
             elif i == ">":
-                depiler(an) if an else empiler(errors, f"Line {line_number + 1}: Unexpected symbol {i}")
+                depiler(an) if an else empiler(errors, f"Line {line_number + 1}: Unexpected closing tag {i}")
         if an:
-            for line_number, i in an:
-                empiler(errors, (f"Line {line_number + 1}: Missing closing \">\"."))
+            for line_number, _ in an:
+                empiler(errors, (f"Line {line_number + 1}: Missing closing >."))
 
         # Check for DOCTYPE declaration
         if not doctype_found and re.match(r'<!DOCTYPE html>', line_content, re.IGNORECASE):
             doctype_found = True
 
         html_tags = re.findall(r'<(/?)(\w+)(?:\s+([^>]*?))?>', line_content)
+        comments = re.findall(r'(?P<full_comment><!-{0,2}\s*(?P<conditional>\[)?[^>]*>)', line_content)
+
+        for match in comments:
+            full_comment, conditional = match
+            if full_comment.startswith('<!DOCTYPE') or conditional or re.match(r'<!--.*-->', full_comment):
+                continue
+            else:
+                empiler(errors, f"Line {line_number + 1}: Malformed comment {full_comment}")
+
         for is_closing, tag_name, attributes_str in html_tags:
             tag_name_lower = tag_name.lower()
             tag_info = tag_details(tag_name_lower)
