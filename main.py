@@ -58,9 +58,9 @@ def validate_html(html: str) -> list | str:
             attributes = re.findall(r'(\w+)(?:\s*=\s*"[^"]*")?', attributes_str)
             for attr in attributes:
                 if attr not in tag_details(tag)["attributes"]:
-                    empiler(errors, f"Line {line_number + 1}: Invalid attribute '{attr}' for tag <{tag}>.")
+                    empiler(errors, f"Line {line_number}: Invalid attribute '{attr}' for tag <{tag}>.")
 
-    for line_number, line_content in enumerate(html_lines):
+    for line_number, line_content in enumerate(html_lines, start=1):
         line_content = line_content.strip()
 
         # Check the arrows < >
@@ -69,10 +69,10 @@ def validate_html(html: str) -> list | str:
             if i == "<":
                 empiler(an, (line_number, i))
             elif i == ">":
-                depiler(an) if an else empiler(errors, f"Line {line_number + 1}: Unexpected closing tag {i}")
+                depiler(an) if an else empiler(errors, f"Line {line_number}: Unexpected closing tag {i}")
         if an:
             for line_number, _ in an:
-                empiler(errors, (f"Line {line_number + 1}: Missing closing >."))
+                empiler(errors, (f"Line {line_number}: Missing closing >."))
 
         # Check for DOCTYPE declaration
         if not doctype_found and re.match(r'<!DOCTYPE html>', line_content, re.IGNORECASE):
@@ -81,19 +81,20 @@ def validate_html(html: str) -> list | str:
         html_tags = re.findall(r'<(/?)(\w+)(?:\s+([^>]*?))?>', line_content)
         comments = re.findall(r'(?P<full_comment><!-{0,2}\s*(?P<conditional>\[)?[^>]*>)', line_content)
 
+        # Check for valid comments
         for match in comments:
             full_comment, conditional = match
             if full_comment.startswith('<!DOCTYPE') or conditional or re.match(r'<!--.*-->', full_comment):
                 continue
             else:
-                empiler(errors, f"Line {line_number + 1}: Malformed comment {full_comment}")
+                empiler(errors, f"Line {line_number}: Malformed comment {full_comment}")
 
         for is_closing, tag_name, attributes_str in html_tags:
             tag_name_lower = tag_name.lower()
             tag_info = tag_details(tag_name_lower)
 
             if not tag_info:
-                empiler(errors, f"Line {line_number + 1}: Unknown or unsupported tag <{tag_name}>.")
+                empiler(errors, f"Line {line_number}: Unknown or unsupported tag <{tag_name}>.")
                 continue
 
             handle_essential_tag(tag_name_lower, is_closing == '/', line_number)
@@ -105,16 +106,16 @@ def validate_html(html: str) -> list | str:
                 else:
                     if any(t[1] == tag_name_lower for t in tags_stack):
                         empiler(errors, (
-                            f"Line {line_number + 1}: Unexpected closing tag </{tag_name}>. "
+                            f"Line {line_number}: Unexpected closing tag </{tag_name}>. "
                             f"Other tags were expected to close first."))
                         while tags_stack and tags_stack[-1][1] != tag_name_lower:
                             line_num, unclosed_tag = tags_stack.pop()
-                            empiler(errors, f"Line {line_num + 1}: Missing closing </{unclosed_tag}>.")
+                            empiler(errors, f"Line {line_num}: Missing closing </{unclosed_tag}>.")
                         depiler(tags_stack)
                     else:
                         expected_tag = tags_stack[-1][1] if tags_stack else 'None'
                         empiler(errors,
-                                f"Line {line_number + 1}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
+                                f"Line {line_number}: Unexpected closing tag </{tag_name}>. Expected </{expected_tag}>.")
             else:
                 if not tag_info["void"]:
                     empiler(tags_stack, (line_number, tag_name_lower))
@@ -128,7 +129,7 @@ def validate_html(html: str) -> list | str:
 
     if tags_stack:
         for line_number, tag_name in tags_stack:
-            empiler(errors, f"Line {line_number + 1}: Missing closing </{tag_name}>.")
+            empiler(errors, f"Line {line_number}: Missing closing </{tag_name}>.")
 
     return errors if errors else "HTML validation passed."
 
