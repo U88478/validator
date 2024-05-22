@@ -37,4 +37,4 @@ v = vp("<<>")
 
 
 # Example call to validate_html function
-validate_html("test_index.html")
+validate_html("html examples/test_index.html")

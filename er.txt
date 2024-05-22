@@ -1,9 +1,1 @@
-Missing <body> tag.
-Line 11: Unexpected closing tag </p>. Other tags were expected to close first.
-Line 11: Missing closing </a>.
-Line 16: Unknown or unsupported tag <r>.
-Line 16: Unknown or unsupported tag <r>.
-Line 25: Missing closing ">".
-Line 26: Unexpected closing tag </div>. Other tags were expected to close first.
-Line 25: Missing closing </p>.
-Line 27: Unexpected closing tag </body>. Expected </html>.
+HTML validation passed.

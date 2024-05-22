@@ -34,7 +34,8 @@ class HTMLValidatorApp(QtWidgets.QMainWindow):
     def upload_file(self):
         options = QtWidgets.QFileDialog.Options()
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open HTML file", "",
-                                                             "HTML Files (*.html);;All Files (*)", options=options)
+                                                             "HTML Files (*.html);;Text Files (*.txt);;All Files (*)",
+                                                             options=options)
         if file_name:
             with open(file_name, 'r') as file:
                 html = file.read()
@@ -58,7 +59,8 @@ class HTMLValidatorApp(QtWidgets.QMainWindow):
         html_content = self.ui.htmlContent.toPlainText()
         if html_content:
             file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save HTML", "",
-                                                                 "HTML Files (*.html);;All Files (*)")
+                                                                 "HTML Files (*.html);;Text Files (*.txt);;"
+                                                                 "All Files (*)")
             if file_name:
                 with open(file_name, 'w') as file:
                     file.write(html_content)

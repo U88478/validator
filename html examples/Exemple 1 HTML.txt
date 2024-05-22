@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Simple</title>
+</head>
+<body>
+    <h1>Bienvenue sur notre site</h2>
+    <p>Ce paragraphe présente notre site.</p>
+    <ul>
+        <li>Accueil
+        <li>Contact</li>
+    </ul>

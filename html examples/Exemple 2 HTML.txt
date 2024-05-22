@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Notre Histoire</title>
+<body>
+    <h2>À propos de nous</h3>
+    <div>
+        Notre équipe est unique.
+    </div>
+    <p>Nous croyons en <strong>l'excellence.</p>
+    <ul>
+        <li>Vision<li>
+        <li>Passion</li>
+</html>
