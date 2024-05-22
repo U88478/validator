@@ -119,7 +119,7 @@ class UiMainWindow(object):
 
         # Create title label and center it
         self.titleLabel = QtWidgets.QLabel("HTML Validator", self.centralwidget)
-        self.titleLabel.setGeometry(QtCore.QRect(390, 10, 191, 51))
+        self.titleLabel.setGeometry(QtCore.QRect(375, 10, 230, 51))
         self.titleLabel.setAlignment(Qt.AlignCenter)
         self.titleLabel.setStyleSheet("font-size: 18pt; font-weight: bold; background: none; color: black;")
 
@@ -131,13 +131,13 @@ class UiMainWindow(object):
 
         # Create title label and center it
         self.outputLabel = QtWidgets.QLabel("Errors Output", self.centralwidget)
-        self.outputLabel.setGeometry(QtCore.QRect(870, 50, 80, 16))
+        self.outputLabel.setGeometry(QtCore.QRect(860, 50, 90, 16))
         self.outputLabel.setAlignment(Qt.AlignCenter)
         self.outputLabel.setStyleSheet("font-size: 8pt; font-weight: bold; background: none; color: black;")
 
         # Create upload button
         self.uploadButton = QtWidgets.QToolButton(self.centralwidget)
-        self.uploadButton.setGeometry(QtCore.QRect(20, 480, 81, 20))
+        self.uploadButton.setGeometry(QtCore.QRect(20, 480, 100, 20))
         self.uploadButton.setObjectName("uploadButton")
         self.uploadButton.setText("Upload a file")
         self.uploadButton.setStyleSheet("""
@@ -155,7 +155,7 @@ class UiMainWindow(object):
 
         # Create validate button
         self.validateButton = QtWidgets.QToolButton(self.centralwidget)
-        self.validateButton.setGeometry(QtCore.QRect(440, 480, 81, 20))
+        self.validateButton.setGeometry(QtCore.QRect(432, 480, 100, 20))
         self.validateButton.setObjectName("validateButton")
         self.validateButton.setText("Validate")
         self.validateButton.setStyleSheet("""
@@ -173,7 +173,7 @@ class UiMainWindow(object):
 
         # Create download HTML button
         self.downloadHTMLButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadHTMLButton.setGeometry(QtCore.QRect(740, 480, 100, 20))
+        self.downloadHTMLButton.setGeometry(QtCore.QRect(700, 480, 120, 20))
         self.downloadHTMLButton.setObjectName("downloadHTMLButton")
         self.downloadHTMLButton.setText("Download HTML")
         self.downloadHTMLButton.setEnabled(False)
@@ -199,7 +199,7 @@ class UiMainWindow(object):
 
         # Create download button
         self.downloadButton = QtWidgets.QToolButton(self.centralwidget)
-        self.downloadButton.setGeometry(QtCore.QRect(850, 480, 100, 20))
+        self.downloadButton.setGeometry(QtCore.QRect(830, 480, 120, 20))
         self.downloadButton.setObjectName("downloadButton")
         self.downloadButton.setText("Download errors")
         self.downloadButton.setStyleSheet("""
